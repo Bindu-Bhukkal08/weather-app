@@ -1,9 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, redirect
 import requests
 
 app = Flask(__name__)
 
 API_KEY = "39f975c0ce727af7dd78118571d13143"
+
+@app.route('/')
+def home():
+    return redirect('/weather?city=Delhi')
 
 @app.route('/weather', methods=['GET'])
 def get_weather():
