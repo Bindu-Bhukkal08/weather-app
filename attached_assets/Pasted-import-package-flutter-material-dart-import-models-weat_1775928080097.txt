@@ -1,0 +1,74 @@
+import 'package:flutter/material.dart';
+import '../models/weather_model.dart';
+
+class ForecastList extends StatelessWidget {
+  final List<ForecastModel> forecast;
+
+  const ForecastList({super.key, required this.forecast});
+
+  String _getWeatherIcon(String iconCode) {
+    return 'https://openweathermap.org/img/wn/$iconCode@2x.png';
+  }
+
+  String _formatTime(String time) {
+    final dateTime = DateTime.parse(time);
+    return '${dateTime.hour.toString().padLeft(2, '0')}:00';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Hourly Forecast',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+ …
+cd backend
+pip install -r requirements.txt
+# Add your OpenWeatherMap API key to .env file
+python app.py
+flutter pub get
+flutter run
+WEATHER_API_KEY=your_api_key_here
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+static const String baseUrl = 'http://192.168.1.100:5000'; // Your IP
+from flask import Flask, request, jsonify
+import requests
+
+app = Flask(_name_)
+
+API_KEY = "YOUR_OPENWEATHER_API_KEY"
+
+@app.route('/weather', methods=['GET'])
+def get_weather():
+    city = request.args.get('city')
+    
+    if not city:
+        return jsonify({"error": "City not provided"}), 400
+
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+
+    response = requests.get(url)
+    data = response.json()
+
+    if response.status_code != 200:
+        return jsonify(data), response.status_code
+
+    weather_data = {
+        "city": data["name"],
+        "temperature": data["main"]["temp"],
+        "humidity": data["main"]["humidity"],
+        "description": data["weather"][0]["description"]
+    }
+
+    return jsonify(weather_data)
+
+if _name_ == '_main_':
+    app.run(debug=True)
+Import request required wheather forecasting:
+39f975c0ce727af7dd78118571d13143
