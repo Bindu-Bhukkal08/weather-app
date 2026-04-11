@@ -86,9 +86,11 @@ async def root():
         }
         .header p { color: rgba(255,255,255,0.6); font-size: 1rem; margin-top: 6px; }
 
+        .search-wrapper {
+            max-width: 600px; margin: 0 auto 20px auto;
+        }
         .search-bar {
-            display: flex; gap: 12px; max-width: 540px;
-            margin: 0 auto 40px auto;
+            display: flex; gap: 10px;
         }
         .search-bar input {
             flex: 1; padding: 16px 22px; border: none; border-radius: 50px;
@@ -101,15 +103,46 @@ async def root():
         .search-bar input::placeholder { color: rgba(255,255,255,0.5); }
         .search-bar input:focus { border-color: #56ccf2; background: rgba(255,255,255,0.18); }
         .search-bar button {
-            padding: 16px 28px; border: none; border-radius: 50px;
+            padding: 14px 24px; border: none; border-radius: 50px;
             background: linear-gradient(135deg, #56ccf2, #2f80ed);
             color: white; font-size: 1rem; font-weight: 600;
             cursor: pointer; font-family: 'Poppins', sans-serif;
             transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 4px 20px rgba(47,128,237,0.4);
+            white-space: nowrap;
         }
         .search-bar button:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(47,128,237,0.5); }
         .search-bar button:active { transform: scale(0.97); }
+
+        .location-btn {
+            display: flex; align-items: center; justify-content: center;
+            gap: 8px; width: 100%; margin-top: 12px;
+            padding: 13px; border: none; border-radius: 50px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white; font-size: 0.95rem; font-weight: 600;
+            cursor: pointer; font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+        .location-btn:hover { background: rgba(86,204,242,0.15); border-color: #56ccf2; }
+        .location-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .location-btn .pulse {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #56ccf2; position: relative;
+        }
+        .location-btn .pulse::after {
+            content: ''; position: absolute; top: -4px; left: -4px;
+            width: 18px; height: 18px; border-radius: 50%;
+            border: 2px solid #56ccf2; animation: ping 1.5s ease-out infinite;
+        }
+        @keyframes ping { 0%{transform:scale(1);opacity:1} 100%{transform:scale(2);opacity:0} }
+
+        .india-section { margin-bottom: 10px; }
+        .section-label {
+            text-align: center; font-size: 0.75rem;
+            color: rgba(255,255,255,0.4); text-transform: uppercase;
+            letter-spacing: 2px; margin-bottom: 10px;
+        }
 
         .weather-card {
             background: rgba(255,255,255,0.08);
@@ -233,18 +266,31 @@ async def root():
         <p>Real-time weather forecasting powered by Python & FastAPI</p>
     </div>
 
-    <div class="search-bar">
-        <input type="text" id="cityInput" placeholder="Search city... (e.g. Delhi, London, Tokyo)" onkeydown="if(event.key==='Enter') searchWeather()">
-        <button onclick="searchWeather()">Search</button>
+    <div class="search-wrapper">
+        <div class="search-bar">
+            <input type="text" id="cityInput" placeholder="🔍 Koi bhi Indian state, district ya village..." onkeydown="if(event.key==='Enter') searchWeather()">
+            <button onclick="searchWeather()">Search</button>
+        </div>
+        <button class="location-btn" id="locBtn" onclick="useMyLocation()">
+            <div class="pulse"></div>
+            📍 Meri Real Location Ka Weather Dikhao
+        </button>
     </div>
 
-    <div class="default-cities">
-        <button class="city-chip" onclick="loadCity('Delhi')">🇮🇳 Delhi</button>
+    <div class="default-cities india-section">
+        <div class="section-label">🇮🇳 Popular Indian Cities</div>
+        <button class="city-chip" onclick="loadCity('Delhi')">🏛️ Delhi</button>
         <button class="city-chip" onclick="loadCity('Mumbai')">🌊 Mumbai</button>
-        <button class="city-chip" onclick="loadCity('Karachi')">🏙️ Karachi</button>
-        <button class="city-chip" onclick="loadCity('London')">🇬🇧 London</button>
-        <button class="city-chip" onclick="loadCity('Dubai')">🏜️ Dubai</button>
-        <button class="city-chip" onclick="loadCity('New York')">🗽 New York</button>
+        <button class="city-chip" onclick="loadCity('Kolkata')">🐟 Kolkata</button>
+        <button class="city-chip" onclick="loadCity('Chennai')">🌴 Chennai</button>
+        <button class="city-chip" onclick="loadCity('Bangalore')">💻 Bangalore</button>
+        <button class="city-chip" onclick="loadCity('Hyderabad')">🍗 Hyderabad</button>
+        <button class="city-chip" onclick="loadCity('Jaipur')">🏯 Jaipur</button>
+        <button class="city-chip" onclick="loadCity('Lucknow')">🕌 Lucknow</button>
+        <button class="city-chip" onclick="loadCity('Patna')">🌾 Patna</button>
+        <button class="city-chip" onclick="loadCity('Bhopal')">🏙️ Bhopal</button>
+        <button class="city-chip" onclick="loadCity('Ahmedabad')">🏭 Ahmedabad</button>
+        <button class="city-chip" onclick="loadCity('Chandigarh')">🌿 Chandigarh</button>
     </div>
 
     <div class="error-msg" id="errorMsg">City not found. Please try another name.</div>
@@ -299,7 +345,7 @@ async def root():
     const weatherIcons = {
         'Clear': '☀️', 'Clouds': '☁️', 'Rain': '🌧️', 'Drizzle': '🌦️',
         'Thunderstorm': '⛈️', 'Snow': '❄️', 'Mist': '🌫️', 'Fog': '🌫️',
-        'Haze': '🌫️', 'Dust': '💨', 'Smoke': '🌫️', 'Tornado': '🌪️'
+        'Haze': '🌁', 'Dust': '💨', 'Smoke': '🌫️', 'Tornado': '🌪️'
     };
 
     function getIcon(condition) {
@@ -310,7 +356,7 @@ async def root():
         const date = new Date(dtTxt);
         const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
         const today = new Date();
-        if (date.toDateString() === today.toDateString()) return 'Today';
+        if (date.toDateString() === today.toDateString()) return 'Aaj';
         return days[date.getDay()];
     }
 
@@ -319,61 +365,113 @@ async def root():
         await searchWeather();
     }
 
-    async function searchWeather() {
-        const city = document.getElementById('cityInput').value.trim();
-        if (!city) return;
-
+    function showLoading() {
         document.getElementById('loading').classList.add('visible');
         document.getElementById('weatherCard').classList.remove('visible');
         document.getElementById('forecastCard').classList.remove('visible');
         document.getElementById('errorMsg').classList.remove('visible');
+    }
 
+    function showError(msg) {
+        const el = document.getElementById('errorMsg');
+        el.textContent = msg || 'Jagah nahi mili. Dusra naam try karein.';
+        el.classList.add('visible');
+    }
+
+    function renderWeather(current, forecast) {
+        document.getElementById('wCity').textContent = current.city;
+        document.getElementById('wCountry').textContent = '📍 ' + current.country;
+        document.getElementById('wTemp').textContent = Math.round(current.temperature) + '°C';
+        document.getElementById('wDesc').textContent = current.description;
+        document.getElementById('wIcon').textContent = getIcon(current.weather);
+        document.getElementById('wFeels').textContent = Math.round(current.feels_like) + '°C';
+        document.getElementById('wHumidity').textContent = current.humidity + '%';
+        document.getElementById('wWind').textContent = current.wind_speed + ' m/s';
+        document.getElementById('wCloud').textContent = current.cloudiness + '%';
+        document.getElementById('weatherCard').classList.add('visible');
+
+        const scroll = document.getElementById('forecastScroll');
+        scroll.innerHTML = '';
+        const seen = new Set();
+        forecast.forecasts.forEach(f => {
+            const day = getDayName(f.datetime);
+            if (!seen.has(day)) {
+                seen.add(day);
+                scroll.innerHTML += `
+                    <div class="forecast-item">
+                        <div class="f-day">${day}</div>
+                        <div class="f-icon">${getIcon(f.weather)}</div>
+                        <div class="f-temp">${Math.round(f.temperature)}°C</div>
+                        <div class="f-rain">💧 ${Math.round(f.rain_probability)}%</div>
+                    </div>`;
+            }
+        });
+        document.getElementById('forecastCard').classList.add('visible');
+    }
+
+    async function searchWeather() {
+        const city = document.getElementById('cityInput').value.trim();
+        if (!city) return;
+        showLoading();
         try {
             const [currentRes, forecastRes] = await Promise.all([
                 fetch(`/weather/current?city=${encodeURIComponent(city)}&units=metric`),
                 fetch(`/weather/forecast?city=${encodeURIComponent(city)}&units=metric&days=5`)
             ]);
-
-            if (!currentRes.ok) throw new Error('City not found');
-
+            if (!currentRes.ok) throw new Error('not found');
             const current = await currentRes.json();
             const forecast = await forecastRes.json();
-
-            document.getElementById('wCity').textContent = current.city;
-            document.getElementById('wCountry').textContent = current.country;
-            document.getElementById('wTemp').textContent = Math.round(current.temperature) + '°C';
-            document.getElementById('wDesc').textContent = current.description;
-            document.getElementById('wIcon').textContent = getIcon(current.weather);
-            document.getElementById('wFeels').textContent = Math.round(current.feels_like) + '°C';
-            document.getElementById('wHumidity').textContent = current.humidity + '%';
-            document.getElementById('wWind').textContent = current.wind_speed + ' m/s';
-            document.getElementById('wCloud').textContent = current.cloudiness + '%';
-
-            document.getElementById('weatherCard').classList.add('visible');
-
-            const scroll = document.getElementById('forecastScroll');
-            scroll.innerHTML = '';
-            const seen = new Set();
-            forecast.forecasts.forEach(f => {
-                const day = getDayName(f.datetime);
-                if (!seen.has(day)) {
-                    seen.add(day);
-                    scroll.innerHTML += `
-                        <div class="forecast-item">
-                            <div class="f-day">${day}</div>
-                            <div class="f-icon">${getIcon(f.weather)}</div>
-                            <div class="f-temp">${Math.round(f.temperature)}°C</div>
-                            <div class="f-rain">💧 ${Math.round(f.rain_probability)}%</div>
-                        </div>`;
-                }
-            });
-            document.getElementById('forecastCard').classList.add('visible');
-
+            renderWeather(current, forecast);
         } catch (e) {
-            document.getElementById('errorMsg').classList.add('visible');
+            showError('Yeh jagah nahi mili. State, district ya village ka sahi naam likhein.');
         } finally {
             document.getElementById('loading').classList.remove('visible');
         }
+    }
+
+    async function useMyLocation() {
+        if (!navigator.geolocation) {
+            showError('Aapka browser location support nahi karta.');
+            return;
+        }
+        const btn = document.getElementById('locBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<div class="pulse"></div> Location dhundh raha hai...';
+        showLoading();
+
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                const { latitude: lat, longitude: lon } = pos.coords;
+                try {
+                    const [currentRes, forecastRes] = await Promise.all([
+                        fetch(`/weather/current?lat=${lat}&lon=${lon}&units=metric`),
+                        fetch(`/weather/forecast?lat=${lat}&lon=${lon}&units=metric&days=5`)
+                    ]);
+                    if (!currentRes.ok) throw new Error();
+                    const current = await currentRes.json();
+                    const forecast = await forecastRes.json();
+                    document.getElementById('cityInput').value = current.city;
+                    renderWeather(current, forecast);
+                } catch {
+                    showError('Location se weather nahi mila. Manually city search karein.');
+                } finally {
+                    document.getElementById('loading').classList.remove('visible');
+                    btn.disabled = false;
+                    btn.innerHTML = '<div class="pulse"></div> 📍 Meri Real Location Ka Weather Dikhao';
+                }
+            },
+            (err) => {
+                document.getElementById('loading').classList.remove('visible');
+                btn.disabled = false;
+                btn.innerHTML = '<div class="pulse"></div> 📍 Meri Real Location Ka Weather Dikhao';
+                if (err.code === 1) {
+                    showError('Location permission denied. Browser settings mein allow karein.');
+                } else {
+                    showError('Location nahi mili. Please manually city search karein.');
+                }
+            },
+            { timeout: 10000, enableHighAccuracy: true }
+        );
     }
 
     loadCity('Delhi');
